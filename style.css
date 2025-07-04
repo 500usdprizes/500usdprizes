@@ -1,19 +1,19 @@
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif;
   background: linear-gradient(135deg,#281a47 0%,#1d293f 100%);
   color: #fff;
-  min-height: 100vh;
   margin: 0;
+  direction: rtl;
 }
 .container {
-  max-width: 380px;
-  margin: 40px auto;
-  background: #222347e6;
-  border-radius: 16px;
+  max-width: 390px;
+  margin: 40px auto 24px auto;
+  background: #24244bdf;
+  border-radius: 18px;
   box-shadow: 0 2px 32px #0003;
   padding: 32px 16px 24px 16px;
   text-align: center;
-  animation: fadein 1s;
+  animation: fadein 0.7s;
 }
 @keyframes fadein {
   from { opacity: 0; transform: translateY(30px);}
@@ -25,8 +25,8 @@ input, button {
   margin: 8px 0;
   border-radius: 8px;
   border: none;
-  width: 90%;
-  background: #161633;
+  width: 94%;
+  background: #191933;
   color: #fff;
 }
 button {
@@ -48,17 +48,17 @@ button:active {
 .usd {
   color: #b0eaff;
   font-size: 1.2em;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 .menu {
   margin: 0 0 20px 0;
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: 7px;
 }
 .menu button {
   flex: 1;
-  padding: 8px 0;
+  padding: 7px 0;
   background: #23233b;
   color: #ffd700;
   font-size: 1em;
@@ -75,19 +75,20 @@ button:active {
   border-radius: 6px;
   word-break: break-all;
   margin: 10px 0;
+  direction: ltr;
 }
 .features {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  margin-top: 22px;
+  margin-top: 20px;
 }
 .feature {
   background: #2a2057;
   padding: 10px 14px;
   border-radius: 8px;
-  font-size: 0.98em;
+  font-size: 0.97em;
   width: 95%;
 }
 .list {
@@ -104,13 +105,71 @@ footer {
   margin: 24px 0 0 0;
   color: #aaa;
   font-size: 0.98em;
+  background: #191933;
+  border-radius: 12px 12px 0 0;
+  padding: 14px 0 8px 0;
 }
-hr {
-  border: none;
-  border-top: 1px solid #35356a;
-  margin: 18px 0;
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
 }
-::-webkit-scrollbar {
-  width: 0;
-  background: transparent;
+ {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 38px;
+  min-width: 180px;
+  max-width: 95vw;
+  background: #23233b;
+  color: #ffd700;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 1.08em;
+  font-weight: 500;
+  box-shadow: 0 2px 18px #0004;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+  transition: opacity 0.4s;
 }
+#toast.show { opacity: 1; pointer-events: auto;}
+.avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(120deg,#ffd700,#4f8cff 80%);
+  display: inline-block;
+  object-fit: cover;
+  margin-bottom: 6px;
+  border: 3px solid #23233b;
+  box-shadow: 0 3px 12px #0005;
+}
+.badge {
+  display: inline-block;
+  margin: 3px 2px 0 2px;
+  padding: 4px 12px;
+  background: #ffd70033;
+  color: #ffd700;
+  border-radius: 12px;
+  font-size: 0.93em;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.action-history {
+  text-align: right;
+  margin: 16px auto;
+  max-width: 330px;
+  background: #191933;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.98em;
+  color: #b0eaff;
+  max-height: 110px;
+  overflow-y: auto;
+}
+.action-history h4 { color: #ffd700; font-size: 1.05em; margin: 0 0 6px 0;}
+.action-history ul { padding: 0 0 0 16px; margin: 0;}
+.action-history li { margin-bottom: 2px;}
+::-webkit-scrollbar { width: 0; background: transparent;}
