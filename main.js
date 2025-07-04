@@ -1,14 +1,5 @@
 const PRICE = 38.99;
-const SUPPLY = 120_000_000;
-const DEFAULT_RATE = 0.003;
-const REFERRAL_BONUS = 1;
-const REFERRAL_RATE = 0.01;
-const MINING_INTERVAL = 24; // hours
-
-// Toast utility for real feedback
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
+const msg;
   el.className = 'show';
   setTimeout(() => { el.className = el.className.replace('show',''); }, 2200);
 }
@@ -32,7 +23,6 @@ let user = loadUser();
 let view = 'mine';
 let message = '';
 let referral = '';
-let avatarSeed = '';
 
 (() => {
   const params = new URLSearchParams(window.location.search);
@@ -41,11 +31,11 @@ let avatarSeed = '';
 
 function hoursSince(date) {
   if (!date) return MINING_INTERVAL;
-  return Math.min(MINING_INTERVAL, (Date.now() - new Date(date)) / (60 * 60 * 1000));
+  return Math.min(MDate.now() - new Date(date)) / (60 * 60 * 1000));
 }
 
 function genAvatarSeed(username) {
-  // Use username to create a pseudo-random avatar from DiceBear
+  // صورة أوتوماتيكية باستخدام DiceBear
   return encodeURIComponent(username || 'faroun');
 }
 
@@ -53,24 +43,19 @@ function render() {
   const app = document.getElementById('app');
   app.innerHTML = '';
   if (!user) {
-    // Registration
     app.innerHTML = `
-      <h2>⛏️ Faroun Mining</h2>
-      <p>Enter your <b>Telegram username</b> to start mining FRN!</p>
-      <input id="username" placeholder="Telegram Username" autocomplete="off"/>
-      <input id="referral" placeholder="Referral (optional)" value="${referral || ''}" autocomplete="off"/>
-      <button id="regbtn">Start Mining</button>
-      <div style="color:#f88;margin-top:8px">${message}</div>
-    `;
-    document.getElementById('regbtn').onclick = () => {
-      const username = document.getElementById('username').value.replace('@','').trim();
-      const ref = document.getElementById('referral').value.replace('@','').trim();
+      <h2>⛏️ تعدين فارون</h2>
+      <p>أدخل <b>اسم مستخدم تيليجرام</b> لبدء التعدين!</p>
+      <input id="username" placeholder="اسم مستخدم تيليجرام" autocomplete="off"/>
+      <input id="referral" placeholder="رمز الإحالة (اختياري)" value="${referral || ''}" autocomplete="off"/>
+      <button id="regbtn">ابدأ التعدين</button>
+      <div style="color:#f88;margin-top:      const ref = document.getElementById('referral').value.replace('@','').trim();
       if (!username || username.length < 5) {
-        showToast('Enter valid Telegram username (min 5 chars)');
+        showToast('يرجى إدخال اسم مستخدم تيليجرام صحيح (5 أحرف على الأقل)');
         return;
       }
       if (ref && ref.toLowerCase() === username.toLowerCase()) {
-        showToast("You can't refer yourself!");
+        showToast("لا يمكنك دعوة نفسك!");
         return;
       }
       let refUser = ref ? loadRefUser(ref) : null;
@@ -94,12 +79,12 @@ function render() {
         refUser.referrals = refUser.referrals || [];
         refUser.referrals.push(username);
         refUser.history = refUser.history || [];
-        refUser.history.unshift(`${new Date().toLocaleString()}: +1 FRN, +0.01 FRN/hr for referring @${username}`);
+        refUser.history.unshift(`${new Date().toLocaleString()}: +1 FRN و +0.01 FRN/ساعة بسبب دعوة @${username}`);
         saveRefUser(ref, refUser);
         newUser.balance = REFERRAL_BONUS;
         newUser.referralBonus = REFERRAL_BONUS;
-        newUser.history.push(`${new Date().toLocaleString()}: +1 FRN from invitation`);
-        showToast('Referral applied! You and your referrer each got 1 FRN.');
+        newUser.history.push(`${new Date().toLocaleString()}: +1 FRN من دعوة`);
+        showToast('تم تطبيق الإحالة! أنت وصديقك حصلتما على 1 FRN.');
       }
       user = newUser;
       saveUser(user);
@@ -109,30 +94,28 @@ function render() {
     return;
   }
 
-  // Menu
+  // القائمة
   app.innerHTML += `
     <div class="menu">
-      <button class="${view==='mine'?'active':''}" id="minebtn">Mine</button>
-      <button class="${view==='profile'?'active':''}" id="profilebtn">Profile</button>
-      <button class="${view==='ref'?'active':''}" id="refbtn">Referrals</button>
-      <button class="${view==='explore'?'active':''}" id="explorebtn">Explore</button>
+      <button class="${view==='mine'?'active':''}" id="minebtn">التعدين</button>
+      <button class="${view==='profile'?'active':''}" id="profilebtn">ملفي</button>
+      <button class="${view==='ref'?'active':''}" id="refbtn">الإحالة</button>
+      <button class="${view==='explore'?'active':''}" id="explorebtn">المميزات</button>
     </div>
   `;
 
-  // -------- MINING (HOME) ---------
+  // --- صفحة التعدين الرئيسية ---
   if (view === 'mine') {
     const percentMined = ((user.balance || 0) / SUPPLY) * 100;
     let nextTapStr = user.lastTap
       ? hoursSince(user.lastTap) < MINING_INTERVAL
-        ? `${Math.ceil(MINING_INTERVAL - hoursSince(user.lastTap))}h`
-        : 'Ready!'
-      : 'Ready!';
-    // Streak logic
+        ? `${Math.ceil(MINING_INTERVAL - hoursSince(user.lastTap))} ساعة`
+        : 'جاهز!'
+      : 'جاهز!';
     let streakBonus = '';
     if (user.streak > 1) {
-      streakBonus = `<div class="badge">🔥 Streak: ${user.streak} days</div>`;
+      streakBonus = `<div class="badge">🔥 سلسلة: ${user.streak} يوم</div>`;
     }
-    // NFT badge preview
     let nftBadges = '';
     if (user.nft.length > 0) {
       nftBadges = '<div style="margin:6px 0 12px 0;">' +
@@ -142,24 +125,16 @@ function render() {
     app.innerHTML += `
       <div class="balance">${user.balance.toFixed(4)} FRN</div>
       <div class="usd">≈ $${(user.balance * PRICE).toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
-      <div>Mining rate: <b>${user.miningRate.toFixed(3)} FRN/hr</b></div>
+      <div>معدل التعدين: <b>${user.miningRate.toFixed(3)} FRN/ساعة</b></div>
       <div style="margin:8px 0;"><progress value="${percentMined}" max="100" style="width:65%"></progress>
-      <span style="font-size:13px;color:#ffd700">${percentMined.toFixed(5)}% mined</span></div>
+      <span style="font-size:13px;color:#ffd700">${percentMined.toFixed(5)}% تم تعدينه</span></div>
       ${nftBadges}
       ${streakBonus}
-      <button id="tapbtn">Tap to Mine</button>
-      <div style="margin:8px 0 0 0;">Next tap: <b>${nextTapStr}</b></div>
-      <div style="color:#0fa;margin:8px 0">${message}</div>
-      <div class="action-history">
-        <h4>Recent Actions</h4>
-        <ul>
-          ${(user.history||[]).slice(0,4).map(ev=>`<li>${ev}</li>`).join('')}
-        </ul>
-      </div>
-    `;
-    document.getElementById('tapbtn').onclick = () => {
+      <button id="tapbtn">اضغط للتعدين</button>
+      <div style="margin:8px 0 0 0;">المحاولة القادمة: <b>${nextTapStr}</b></div>
+      <div style="color:#0fa;margin:8px 0">${message = () => {
       if (user.lastTap && hoursSince(user.lastTap) < MINING_INTERVAL) {
-        showToast(`Come back in ${Math.ceil(MINING_INTERVAL - hoursSince(user.lastTap))}h`);
+        showToast(`انتظر ${Math.ceil(MINING_INTERVAL - hoursSince(user.lastTap))} ساعة قبل المحاولة التالية`);
         return;
       }
       const earned = user.miningRate * MINING_INTERVAL;
@@ -167,71 +142,88 @@ function render() {
       user.lastTap = new Date().toISOString();
       user.totalEarned = (user.totalEarned || 0) + earned;
 
-      // Streak logic
+      // streak
       const today = new Date();
       const lastStreak = user.lastStreak ? new Date(user.lastStreak) : null;
-      if (lastStreak && today - lastStreak < 48 * 60 * 60 * 1000 && today.getDate.history.unshift(`${today.toLocaleString()}: +5 FRN streak bonus`);
-        if (!user.nft.includes('Streak5')) user.nft.push('Streak5');
+      if (lastStreak && today - lastStreak < 48 * 60 * 60 * 1000 && today.getDate() !== lastStreak.getDate()) {
+        user.streak++;
+      } else if (!lastStreak || today - lastStreak > 48 * 60 * 60 * 1000) {
+        user.streak = 1;
       }
-      // NFT badges for mining milestones
-      if (user.totalEarned >= 100 && !user.nft.includes('Miner100')) {
-        user.nft.push('Miner100');
-        streakMsg += ' 🏅 NFT: 100 FRN Miner!';
+      user.lastStreak = today.toISOString();
+
+      // مكافأة السلسلة
+      let streakMsg = '';
+      if (user.streak && user.streak % 5 === 0) {
+        user.balance += 5;
+        streakMsg = '🔥 +5 FRN مكافأة سلسلة!';
+        user.history.unshift(`${today.toLocaleString()}: +5 FRN مكافأة سلسلة`);
+        if (!user.nft.includes('سلسلة5')) user.nft.push('سلسلة5');
       }
-      if (user.referrals.length >= 5 && !user.nft.includes('Ref5')) {
-        user.nft.push('Ref5');
-        streakMsg += ' 🏅 NFT: 5 Referrals!';
+      // شارات NFT
+      if (user.totalEarned >= 100 && !user.nft.includes('عامل100')) {
+        user.nft.push('عامل100');
+        streakMsg += ' 🏅 شارة: عامل 100 FRN!';
+      }
+      if (user.referrals.length >= 5 && !user.nft.includes('إحالة5')) {
+        user.nft.push('إحالة5');
+        streakMsg += ' 🏅 شارة: 5 إحالات!';
       }
 
-      // Action history
+      // سجل العمليات
       user.history = user.history || [];
-      user.history.unshift(`${today.toLocaleString()}: +${earned.toFixed(4)} FRN (mined)`);
+      user.history.unshift(`${today.toLocaleString()}: +${earned.toFixed(4)} FRN (تعدين)`);
       if (user.history.length > 12) user.history.length = 12;
 
       saveUser(user);
       saveRefUser(user.username, user);
-      showToast(`+${earned.toFixed(4)} FRN mined! ${streakMsg}`);
+      showToast(`+${earned.toFixed(4)} FRN تم تعدينها! ${streakMsg}`);
       render();
     };
   }
 
-  // -------- PROFILE ---------
+  // --- الملف الشخصي ---
   else if (view === 'profile') {
     app.innerHTML += `
-      <h3>👤 Profile</h3>
+      <h3>👤 الملف الشخصي</h3>
       <img class="avatar" src="https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.avatar}" alt="avatar" />
       <div style="font-size:1.15em;font-weight:bold;margin-top:7px;">@${user.username}</div>
-      <div style="margin:7px 0 0 0;">Balance: <b>${user.balance.toFixed(4)} FRN</b> ($${(user.balance*PRICE).toLocaleString(undefined, {maximumFractionDigits:2})})</div>
-      <div>Mining Rate: <b>${user.miningRate.toFixed(3)} FRN/hr</b></div>
-      <div>Total Earned: <b>${(user.totalEarned || 0).toFixed(4)} FRN</b></div>
-      <div>Streak: <b>${user.streak||1}</b> days</div>
-      <div>Referrals: <b>${user.referrals.length}</b></div>
-      <div>Referral Bonus: <b>${user.referralBonus||0} FRN</b></div>
-      <div style="margin:10pxStorage.removeItem('frn_user');
+      <div style="margin:7px 0 0 0;">الرصيد: <b>${user.balance.toFixed(4)} FRN</b> ($${(user.balance*PRICE).toLocaleString(undefined, {maximumFractionDigits:2})})</div>
+      <div>معدل التعدين: <b>${user.miningRate.toFixed(3)} FRN/ساعة</b></div>
+      <div>إجمالي التعدين: <b>${(user.totalEarned || 0).toFixed(4)} FRN</b></div>
+      <div>سلسلة التعدين: <b>${user.streak||1}</b> يوم</div>
+      <div>عدد الإحالات: <b>${user.referrals.length}</b></div>
+      <div>مكافأة الإحالة: <b>${user.referralBonus||0} FRN</b></div>
+      <div style="margin:10px 0;">
+        ${user.nft.length>0?user.nft.map(n=>`<span class="badge">🏅 ${n}</span>`).join(''):'<span style="color:#555;">لا توجد شارات بعد</span>'}
+      </div>
+      <hr>
+      <button id="logoutbtn">تسجيل خروج</button>
+    `;
+    document.getElementById('logoutbtn').onclick = () => {
+      if (confirm('هل أنت متأكد أنك تريد تسجيل الخروج؟')) {
+        localStorage.removeItem('frn_user');
         user = null; message = '';
         render();
       }
     };
   }
 
-  // -------- REFERRALS --------
+  // --- صفحة الإحالة ---
   else if (view === 'ref') {
-    app.innerHTML += `
-      <h3>🔗 Referral Program</h3>
-      <div>Share your link and get <b>+1 FRN</b> and <b>+0.01 FRN/hr</b> for each friend!</div>
-      <div class="referral-link" id="reflink">${window.location.origin+window.location.pathname}?ref=${user.username}</div>
-      <button id="copyref">Copy Link</button>
-      <div style="margin:8px 0;"><b>${user.referrals.length}</b> friends joined with your link!</div>
+   flink">${window.location.origin+window.location.pathname}?ref=${user.username}</div>
+      <button id="copyref">نسخ الرابط</button>
+      <div style="margin:8px 0;"><b>${user.referrals.length}</b> أصدقاء سجلوا برابطك!</div>
       ${user.referrals.length > 0
         ? `<ul class="list">${user.referrals.map(r=>'<li>@'+r+'</li>').join('')}</ul>`
         : ''
       }
       <div style="margin-top:12px;">
-        <b>How it works:</b>
+        <b>طريقة العمل:</b>
         <ul class="list">
-          <li>1. Copy your invite link</li>
-          <li>2. Your friend enters with your code</li>
-          <li>3. Both get +1 FRN; you get +0.01 FRN/hr mining speed</li>
+          <li>١. انسخ رابط الدعوة الخاص بك</li>
+          <li>٢. صديقك يدخل باسم المستخدم في الحقل</li>
+          <li>٣. كل منكما يحصل على +1 FRN وزيادة سرعة التعدين</li>
         </ul>
       </div>
     `;
@@ -239,25 +231,30 @@ function render() {
       const text = `${window.location.origin+window.location.pathname}?ref=${user.username}`;
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text);
-        showToast('Referral link copied!');
+        showToast('تم نسخ رابط الدعوة!');
       }
     };
   }
 
-  // -------- EXPLORE / FEATURES --------
-  else if (view === 'explore')margin-top:20px;color:#aaa;font-size:0.98em;">
-        Want more? Suggest features in our Telegram channel!
+  // --- صفحة المميزات ---
+  else if (view === 'explore') {
+    app.innerHTML += `
+      <h3>🚀 المميزات</h3>
+      <div class="features">
+        <div class="feature">🏆 <b>لوحة الصدارة</b> (قريبًا)</div>
+        <div class="feature">🏅 <b>شارات NFT</b> للمعدنين والمحالين</div>
+        <div class="feature">🔥 <b>مكافأة السلسلة اليومية</b> (مفعلة الآن!)</div>
+        <div class="feature">💸 <b>سحب إلى تيليجرام</b> (قريبًا)</div>
+        <div class="feature">🌕 <b>عملة مستقرة:</b> 1 FRN = $38.99</div>
+        <div class="feature">📦 <b>إجمالي العرض:</b> 120,000,000 FRN</div>
+      </div>
+      <div style="margin-top:20px;color:#aaa;font-size:0.98em;">
+        اقترح علينا أفكارًا جديدة في قناة تيليجرام!
       </div>
     `;
   }
 
-  app.innerHTML += `
-    <footer>
-      Faroun (FRN) &copy; 2025 | 1 FRN = $38.99 | Total supply: 120,000,000 FRN
-    </footer>
-  `;
-
-  // Menu handlers
+  // تفعيل أزرار القائمة
   document.getElementById('minebtn').onclick = () => { view='mine'; message=''; render(); };
   document.getElementById('profilebtn').onclick = () => { view='profile'; message=''; render(); };
   document.getElementById('refbtn').onclick = () => { view='ref'; message=''; render(); };
